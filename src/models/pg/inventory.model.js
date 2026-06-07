@@ -2,7 +2,7 @@ const { query } = require("../../config/db.pg");
 
 const InventoryModel = {
   // Get Stock
-  async geStock(sku) {
+  async getStock(sku) {
     const sql = `SELECT stock_quantity FROM inventories WHERE sku = $1;`;
 
     const { rows } = await query(sql, [sku]);
