@@ -91,15 +91,16 @@ const ProductSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-ProductSchema.pre("validate", function (next) {
+ProductSchema.pre("validate", function () {
   if (this.title && !this.slug) {
     this.slug = this.title
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/(^-|-$)+/g, "");
   }
-  next();
 });
+
+ProductSchema.index({ title: "text", brand: "text", description: "text" });
 
 const Product = mongoose.model("Product", ProductSchema);
 

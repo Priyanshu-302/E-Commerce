@@ -25,7 +25,7 @@ const generateRefreshToken = (user) => {
 
 // Register User
 const register = asyncWrapper(async (req, res, next) => {
-  const { email, password, firstName, lastName, phone } = req.body;
+  const { email, password, firstName, lastName, phone, role } = req.body;
 
   // Check if user exists or not
   const existingUser = await UserModel.findByEmail(email);
@@ -39,10 +39,11 @@ const register = asyncWrapper(async (req, res, next) => {
   // Create the new user
   const newUser = await UserModel.create({
     email,
-    password: hashedPassword,
+    passwordHash: hashedPassword,
     firstName,
     lastName,
     phone,
+    role,
   });
 
   res.status(201).json({
@@ -59,7 +60,7 @@ const login = asyncWrapper(async (req, res, next) => {
   // Retrieve the user
   const user = await UserModel.findByEmail(email);
 
-  if (!user || !(await bcrypt.compare(password, user.password))) {
+  if (!user || !(await bcrypt.compare(password, user.password_hash))) {
     return next(new AppError("Invalid email or password", 400));
   }
 

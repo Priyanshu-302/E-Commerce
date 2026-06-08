@@ -2,11 +2,12 @@ const { query } = require("../../config/db.pg");
 
 const TokenModel = {
   // Save the token
-  async save(userId, token, expiresAt) {
+  async save({ userId, token, expiresAt }) {
     const sql = `
-      INSERT INTO refresh_tokens (user_id, token, expires_at)
-      VALUES ($1, $2, $3)
-      RETURNING *;`;
+    INSERT INTO refresh_tokens (user_id, token, expires_at)
+    VALUES ($1, $2, $3)
+    RETURNING *;
+  `;
 
     const { rows } = await query(sql, [userId, token, expiresAt]);
 

@@ -47,6 +47,15 @@ const AddressModel = {
     return rows;
   },
 
+  // Find by id
+  async findById(id, userId) {
+    const sql = `SELECT * FROM addresses WHERE id = $1 AND user_id = $2;`;
+
+    const { rows } = await query(sql, [id, userId]);
+
+    return rows[0];
+  },
+
   // Delete user addresses
   async delete(id, userId) {
     const sql = `DELETE FROM addresses WHERE id = $1 AND user_id = $2 RETURNING id;`;

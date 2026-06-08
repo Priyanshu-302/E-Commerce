@@ -72,7 +72,7 @@ const OrderModel = {
     const { rows: orderRows } = await pool.query(orderSql, [orderId]);
 
     if (orderRows.length === 0) return null;
-    const { rows: itemRows } = await pool.query(itemsSql, [orderId]);
+    const { rows: itemRows } = await pool.query(itemSql, [orderId]);
 
     return {
       ...orderRows[0],

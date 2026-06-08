@@ -2,6 +2,7 @@ const { asyncWrapper } = require("../utils/asyncWrapper.js");
 const { AppError } = require("../utils/errors/AppError.js");
 const Product = require("../models/mongodb/product.model.js");
 const Category = require("../models/mongodb/category.model.js");
+const { InventoryModel } = require("../models/pg/inventory.model.js");
 
 // Get Products
 const getProducts = asyncWrapper(async (req, res, next) => {
@@ -14,6 +15,8 @@ const getProducts = asyncWrapper(async (req, res, next) => {
     page = 1,
     limit = 12,
   } = req.query;
+
+  const queryObj = {};
 
   if (category) queryObj.categories = category; // Category ObjectId
   if (brand) queryObj.brand = brand;
@@ -114,9 +117,26 @@ const getCategories = asyncWrapper(async (req, res, next) => {
   });
 });
 
+// Update the inventory
+const updateInventoryStock = asyncWrapper(async (req, res, next) => {
+  const { sku, quantity } = req.body;
+  if (!sku || quantity === undefined) {
+    return next(new AppError("SKU and quantity are required.", 400));
+  }
+  const updatedInventory = await InventoryModel.updateStock(
+    sku,
+    Number(quantity),
+  );
+  res.status(200).json({
+    status: "success",
+    inventory: updatedInventory,
+  });
+});
+
 module.exports = {
   getProducts,
   getProductByIdOrSlug,
   addProduct,
   getCategories,
-}
+  updateInventoryStock,
+};

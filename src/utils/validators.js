@@ -7,6 +7,7 @@ const registerSchema = z.object({
   firstName: z.string().min(1, "First name is required."),
   lastName: z.string().min(1, "Last name is required."),
   phone: z.string().optional().nullable(),
+  role: z.string().optional().default("customer"),
 });
 
 // Schema for login validation

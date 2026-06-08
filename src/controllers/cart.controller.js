@@ -22,7 +22,7 @@ const getCart = asyncWrapper(async (req, res, next) => {
 
       items.push({
         id: item.id,
-        productId: product_id,
+        productId: item.product_id,
         sku: item.sku,
         name: product.title,
         price,
@@ -45,11 +45,15 @@ const getCart = asyncWrapper(async (req, res, next) => {
 
 // Add item to cart
 const addItemToCart = asyncWrapper(async (req, res, next) => {
-  const { productId, sku, quantity } = req.body;
+  const { sku, quantity } = req.body;
 
-  // Check stock is available or not in PostgreSQL
-  const stock = await InventoryModel.getStock(sku);
-  if (stock < quantity) {
+  if (!sku || !quantity) {
+    return next(new AppError("SKU and quantity are required.", 400));
+  }
+
+  // 1. Check stock availability in PostgreSQL
+  const stockAvailable = await InventoryModel.getStock(sku);
+  if (stockAvailable < quantity) {
     return next(
       new AppError(
         `Only ${stockAvailable} items left in stock for SKU ${sku}.`,
@@ -58,17 +62,22 @@ const addItemToCart = asyncWrapper(async (req, res, next) => {
     );
   }
 
-  // Check if product exists or not
-  const product = await Product.findById(productId);
-  if (!product) {
-    return next(new AppError("Product does not exist in catalog.", 404));
+  // 2. Auto-lookup the product inside MongoDB using the SKU
+  const productExists = await Product.findOne({ "variants.sku": sku });
+  if (!productExists) {
+    return next(
+      new AppError(
+        `No product found in catalog matching variant SKU: ${sku}.`,
+        404,
+      ),
+    );
   }
 
-  // Create the cart and add the new item
+  // 3. Save to Postgres cart (extracting the MongoDB _id automatically)
   const cart = await CartModel.getOrCreate(req.user.id);
   const newItem = await CartModel.addItem({
     cartId: cart.id,
-    productId,
+    productId: productExists._id.toString(), // Automatically extracted
     sku,
     quantity,
   });
@@ -89,7 +98,7 @@ const updateCartItem = asyncWrapper(async (req, res, next) => {
   if (stock < quantity) {
     return next(
       new AppError(
-        `Cannot update quantity. Only ${stockAvailable} items left in stock.`,
+        `Cannot update quantity. Only ${stock} items left in stock.`,
         400,
       ),
     );

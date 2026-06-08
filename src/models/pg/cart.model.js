@@ -4,7 +4,7 @@ const CartModel = {
   // Get ot Create the cart
   async getOrCreate(userId) {
     const sql = `SELECT * FROM carts WHERE user_id = $1`;
-    const { rows } = await query(sql, [userId]);
+    let { rows } = await query(sql, [userId]);
 
     if (rows.length === 0) {
       const sql = `INSERT INTO carts (user_id) VALUES ($1) RETURNING *;`;
