@@ -5,6 +5,8 @@ const { OrderModel } = require("../models/pg/order.model.js");
 const { AddressModel } = require("../models/pg/address.model.js");
 const Product = require("../models/mongodb/product.model.js");
 const { StripeService } = require("../services/stripe.service.js");
+const { UserModel } = require("../models/pg/user.model.js");
+const { MailService } = require("../services/email.service.js");
 
 // checkout
 const checkout = asyncWrapper(async (req, res, next) => {
@@ -107,8 +109,42 @@ const getMyOrders = asyncWrapper(async (req, res, next) => {
   });
 });
 
+// Simulate payment success (DEV helper)
+const simulatePayment = asyncWrapper(async (req, res, next) => {
+  const { orderId } = req.params;
+
+  const order = await OrderModel.findById(orderId);
+  if (!order || order.user_id !== req.user.id) {
+    return next(new AppError("Order not found.", 404));
+  }
+
+  const updatedOrder = await OrderModel.updateStatus(
+    orderId,
+    "paid",
+    "sim_pay_" + Math.random().toString(36).substr(2, 9)
+  );
+
+  // Send transactional confirmation email
+  const user = await UserModel.findById(req.user.id);
+  if (user && updatedOrder) {
+    try {
+      await MailService.sendConfirmation(user.email, updatedOrder);
+      console.log(`[Simulator] Confirmation email sent successfully to: ${user.email}`);
+    } catch (mailError) {
+      console.error("[Simulator] Error dispatching confirmation email:", mailError.message);
+    }
+  }
+
+  res.status(200).json({
+    status: "success",
+    message: "Payment simulated successfully.",
+    order: updatedOrder,
+  });
+});
+
 module.exports = {
   checkout,
   getOrderDetails,
   getMyOrders,
+  simulatePayment,
 };

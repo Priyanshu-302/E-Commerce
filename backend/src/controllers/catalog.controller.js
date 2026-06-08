@@ -133,10 +133,22 @@ const updateInventoryStock = asyncWrapper(async (req, res, next) => {
   });
 });
 
+// Get stock of a SKU (PUBLIC)
+const getStock = asyncWrapper(async (req, res, next) => {
+  const { sku } = req.params;
+  const stock = await InventoryModel.getStock(sku);
+  res.status(200).json({
+    status: "success",
+    sku,
+    stock,
+  });
+});
+
 module.exports = {
   getProducts,
   getProductByIdOrSlug,
   addProduct,
   getCategories,
   updateInventoryStock,
+  getStock,
 };

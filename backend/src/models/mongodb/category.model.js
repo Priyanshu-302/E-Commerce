@@ -28,14 +28,13 @@ const CategorySchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-CategorySchema.pre('validate', function(next) {
+CategorySchema.pre('validate', function() {
   if (this.name && !this.slug) {
     this.slug = this.name
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/(^-|-$)+/g, '');
   }
-  next();
 });
 
 const Category = mongoose.model('Category', CategorySchema);

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SwiftCart - Premium Shop</title>
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="Shop the latest premium products on SwiftCart. Fast checkout, premium collection, and incredible deals.">
+  <meta name="keywords" content="e-commerce, shopping, premium, fast shipping, swiftcart">
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Styling -->
+  <link rel="stylesheet" href="/style.css">
+  <!-- Stripe.js for payments -->
+  <script src="https://js.stripe.com/v3/"></script>
+</head>
+<body>
+  
+  <!-- App Shell -->
+  <div id="app-shell">
+    <!-- Header/Navbar Container -->
+    <header id="main-header"></header>
+
+    <!-- Main Viewport Container -->
+    <main id="main-viewport">
+      <div class="loader-container" id="app-loader">
+        <div class="spinner"></div>
+      </div>
+    </main>
+
+    <!-- Footer Container -->
+    <footer id="main-footer"></footer>
+  </div>
+
+  <!-- Notification Toast Container -->
+  <div id="toast-container"></div>
+
+  <!-- Modal Portal Overlay -->
+  <div id="modal-portal" class="modal-overlay hidden">
+    <div class="modal-content" id="modal-body">
+      <!-- Dynamic modal content goes here -->
+    </div>
+  </div>
+
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Main Application Script Entry -->
+  <script type="module" src="/js/app.js"></script>
+</body>
+</html>

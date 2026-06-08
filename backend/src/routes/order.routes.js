@@ -3,6 +3,7 @@ const {
   checkout,
   getOrderDetails,
   getMyOrders,
+  simulatePayment,
 } = require("../controllers/order.controller.js");
 const { authMiddleware } = require("../middlewares/auth.middleware.js");
 
@@ -13,6 +14,7 @@ router.use(authMiddleware);
 
 router.post("/checkout", checkout);
 router.get("/my-orders", getMyOrders);
+router.post("/:orderId/simulate-payment", simulatePayment);
 router.get("/:orderId", getOrderDetails);
 
 module.exports = router;
